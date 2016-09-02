@@ -1,0 +1,17 @@
+{
+  "name": "pusherjs",
+  "version": "1.0.0",
+  "description": "Pusher Service will get messages from other Services, parse them and deliver them to Client (Browser)",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yury Prokashev",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.14.0",
+    "kafka-node": "^0.5.5",
+    "pusher": "^1.4.0-rc6",
+    "socket.io": "^1.4.8"
+  }
+}
