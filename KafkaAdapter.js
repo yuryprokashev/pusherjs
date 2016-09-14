@@ -66,7 +66,9 @@ KafkaAdapter = function () {
             }
         });
         self.consumer.on('message', function (message) {
-            callback(message);
+            if(message.topic === topic) {
+                callback(message);
+            }
         });
     };
 

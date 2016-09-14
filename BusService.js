@@ -4,14 +4,12 @@
 
 var BusService;
 
-var KafkaAdapter = require('./KafkaAdapter');
-
 BusService = function (adapter) {
     var self = this;
     self.adapter = adapter;
     return {
         send: function(topic, message) {
-            self.adapter.send(topic, message);
+            self.adapter.send(topic, {message: message});
         },
         subscribe: function(topic, callback) {
             self.adapter.subscribe(topic, callback);

@@ -39,8 +39,8 @@ PusherService = function () {
                 var value = JSON.parse(msg.value);
                 var id = value.userToken;
                 var dayCode = value.dayCode;
-                sockets[id].emit("client-payload-new-1", {push: "client-payload-new",dateCode: dayCode});
-            }, 300);
+                sockets[id].emit("client-payload-new-1", {push: "client-payload-new",dayCode: dayCode});
+            }, 1500);
         } );
     });
 
