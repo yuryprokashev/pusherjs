@@ -23,7 +23,7 @@ PusherService = function () {
 
     var sockets = {};
 
-    var self = this;
+    // var self = this;
 
     io.on('connection', function (socket) {
 
@@ -39,7 +39,7 @@ PusherService = function () {
                 var value = JSON.parse(msg.value);
                 var id = value.userToken;
                 var dayCode = value.dayCode;
-                sockets[id].emit("client-payload-new-1", {push: "client-payload-new",dayCode: dayCode});
+                sockets[id].emit("client-payload-new-1", {push: "client-payload-new", dayCode: dayCode});
             }, 1500);
         } );
     });
@@ -55,7 +55,7 @@ PusherService = function () {
         }
 
     };
-    Bus.subscribe('payload-new', handleNewPayload);
+    Bus.subscribe('payload-done', handleNewPayload);
 };
 
 module.exports = PusherService;
