@@ -2,6 +2,9 @@
  * Created by py on 12/08/16.
  */
 
-var PusherService = require('./PusherService');
+const PusherService = require('./src/PusherService2');
+const express = require( 'express' );
+const server = express();
 
-var app = new PusherService();
+var app = new PusherService(server);
+app.listen();

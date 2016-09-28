@@ -5,6 +5,8 @@
 
 var KafkaAdapter;
 
+const MyDates = require('./MyDates');
+
 KafkaAdapter = function () {
 
     var self = this;
@@ -13,14 +15,15 @@ KafkaAdapter = function () {
     var kafkaClient = new kafka.Client('localhost:2181/', 'kafka-node-client');
 
     var setUpProducer = function (kafkaClient) {
-        self.producer = new kafka.Producer(kafkaClient);
+        self.producer = new kafka.Producer(kafkaClient, {partitionerType: 2});
         self.producer.on('ready', function () {
-            console.log('NodeJS Kafka Producer Ready...');
+            console.log('MessageService: NodeJS Kafka Producer Ready...');
         });
     };
 
     var setUpConsumer = function(kafkaClient){
         self.consumer = new kafka.Consumer(kafkaClient,[]);
+
         self.consumer.on('error', function (error) {
             console.log('consumer error:');
             console.log(error);
@@ -33,20 +36,23 @@ KafkaAdapter = function () {
     // function: sends message.<whatever> property to Kafka withing 'topic'
     // return: void
     var send = function (topic, message) {
+        // const KeyedMessage = kafka.KeyedMessage;
         var payload = [];
+        // var km = new KeyedMessage(topic, JSON.stringify(message.message));
         payload.push(
             {
                 topic: topic,
                 messages: JSON.stringify(message.message)
+                // messages: km,
             });
         self.producer.send(payload, function (err, data) {
             if(err) {
-                // console.log("error");
-                // console.log(err);
+                console.log("error");
+                console.log(err);
             }
             if(data){
-                // console.log("data");
-                // console.log(data);
+                console.log("data sent");
+                console.log(data);
             }
         })
     };
@@ -55,7 +61,15 @@ KafkaAdapter = function () {
     // param: Function callback - the function to be executed after message will arrive
     // function: tell Kafka that you want to get messages for this topic
     var subscribe = function (topic, callback) {
-        self.consumer.addTopics([topic], function (err, added) {
+        var topics = [
+            {topic:topic, partition:0},
+            {topic:topic, partition:1},
+            {topic:topic, partition:2},
+            {topic:topic, partition:3},
+            {topic:topic, partition:4},
+            {topic:topic, partition:5}
+        ];
+        self.consumer.addTopics(topics, function (err, added) {
             if(err){
                 // console.log("error");
                 // console.log(err);
@@ -72,6 +86,7 @@ KafkaAdapter = function () {
         });
     };
 
+
     // MAIN LOOP
     setUpProducer(kafkaClient);
     setUpConsumer(kafkaClient);
@@ -79,7 +94,7 @@ KafkaAdapter = function () {
     // MODIFY BELOW VERY CAREFULLY!!!
     return {
         send: send,
-        subscribe: subscribe
+        subscribe: subscribe,
     }
 };
 

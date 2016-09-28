@@ -13,5 +13,10 @@
     "kafka-node": "^0.5.5",
     "pusher": "^1.4.0-rc6",
     "socket.io": "^1.4.8"
+  },
+  "devDependencies": {
+    "babel-core": "^6.14.0",
+    "babel-preset-es2015": "^6.14.0",
+    "babel-watch": "^2.0.2"
   }
 }
