@@ -47,7 +47,7 @@ class PusherService2 {
             let msg = readRecipientMessage(busMessage);
             if(isRecipientWaiting(id) === true){
                 console.log('isRecipientWaiting = true. Sending message...');
-                send('client-payload-new', id, msg);
+                send(`client-payload-new-${id}`, id, msg);
             }
             else if(isRecipientWaiting(id) === false){
                 console.log('isRecipientWaiting = false. Waiting for recipient arrival.');
@@ -58,10 +58,10 @@ class PusherService2 {
         function send(topic, recipientId, pusherMessage){
             let recipient = _this.recipientsWaiting.get(recipientId);
             recipient.emit(topic, pusherMessage);
-            _this.recipientsWaiting.delete(recipientId);
-            _this.arrivedBusMessages.delete(recipientId);
             recipient.emit('reset-id', {_id: recipientId});
             console.log(`session closed for ${recipientId}`);
+            _this.recipientsWaiting.delete(recipientId);
+            _this.arrivedBusMessages.delete(recipientId);
         }
 
         function sendOnArrival(recipientId, busMessage){
@@ -73,7 +73,9 @@ class PusherService2 {
                 let bmsg = _this.arrivedBusMessages.get(id);
                 console.log(bmsg);
                 let msg = readRecipientMessage(bmsg);
+                // send(`client-payload-new-${id}`, id, msg);
                 send(`client-payload-new-${id}`, id, msg);
+
             });
         }
 
