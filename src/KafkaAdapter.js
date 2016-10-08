@@ -12,8 +12,8 @@ KafkaAdapter = function () {
     var self = this;
 
     var kafka = require('kafka-node');
-    var kafkaClient = new kafka.Client('localhost:2181/', 'kafka-node-client');
-    console.log(process.env);
+    var kafkaClient = new kafka.Client(`${process.env.KAFKA_HOST}:2181/`, 'kafka-node-client');
+
 
     var setUpProducer = function (kafkaClient) {
         self.producer = new kafka.Producer(kafkaClient, {partitionerType: 2});
