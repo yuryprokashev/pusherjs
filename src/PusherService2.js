@@ -13,7 +13,7 @@ class PusherService2 {
     //@param: server instance
     constructor(s){
         this.pusher = require('http').Server(s);
-        this.pusher.listen(80);
+        this.pusher.listen(50000);
         this.io = require('socket.io')(this.pusher);
         this.emitter = new EventEmitter();
         this.recipientsWaiting = new Map();
@@ -31,7 +31,7 @@ class PusherService2 {
         let _this = this;
         function listenRecipient(recipient) {
             recipient.on('set-id', function(data){
-                console.log(`new pusher session created with id = ${data._id}`);
+                // console.log(`new pusher session created with id = ${data._id}`);
                 _this.recipientsWaiting.set(data._id, recipient);
                 _this.emitter.emit(`recipient-arrived-${data._id}`, {id: data._id});
             });
@@ -46,11 +46,11 @@ class PusherService2 {
             let id = readRecipientId(busMessage);
             let msg = readRecipientMessage(busMessage);
             if(isRecipientWaiting(id) === true){
-                console.log('isRecipientWaiting = true. Sending message...');
+                // console.log('isRecipientWaiting = true. Sending message...');
                 send(`client-payload-new-${id}`, id, msg);
             }
             else if(isRecipientWaiting(id) === false){
-                console.log('isRecipientWaiting = false. Waiting for recipient arrival.');
+                // console.log('isRecipientWaiting = false. Waiting for recipient arrival.');
                 sendOnArrival(id, busMessage);
             }
         }
@@ -59,14 +59,14 @@ class PusherService2 {
             let recipient = _this.recipientsWaiting.get(recipientId);
             recipient.emit(topic, pusherMessage);
             recipient.emit('reset-id', {_id: recipientId});
-            console.log(`session closed for ${recipientId}`);
+            // console.log(`session closed for ${recipientId}`);
             _this.recipientsWaiting.delete(recipientId);
             _this.arrivedBusMessages.delete(recipientId);
         }
 
         function sendOnArrival(recipientId, busMessage){
             _this.arrivedBusMessages.set(recipientId, busMessage);
-            console.log(`we have stored the busMessage for id = ${recipientId}`);
+            // console.log(`we have stored the busMessage for id = ${recipientId}`);
             _this.emitter.once(`recipient-arrived-${recipientId}`, function(data){
                 let id = data.id;
                 console.log(`we request id = ${id} from ArrivedBusMessages`);
