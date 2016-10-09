@@ -31,7 +31,7 @@ class PusherService2 {
         let _this = this;
         function listenRecipient(recipient) {
             recipient.on('set-id', function(data){
-                // console.log(`new pusher session created with id = ${data._id}`);
+                console.log(`new pusher session created with id = ${data._id}`);
                 _this.recipientsWaiting.set(data._id, recipient);
                 _this.emitter.emit(`recipient-arrived-${data._id}`, {id: data._id});
             });
