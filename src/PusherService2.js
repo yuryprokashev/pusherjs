@@ -13,7 +13,7 @@ class PusherService2 {
     //@param: server instance
     constructor(s){
         this.pusher = require('http').Server(s);
-        this.pusher.listen(50000);
+        this.pusher.listen(80);
         this.io = require('socket.io')(this.pusher);
         this.emitter = new EventEmitter();
         this.recipientsWaiting = new Map();
