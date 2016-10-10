@@ -6,7 +6,7 @@
 var KafkaAdapter;
 
 const MyDates = require('./MyDates');
-const KAFKA_HOST = "ec2-54-171-231-214.eu-west-1.compute.amazonaws.com";
+// const KAFKA_HOST = "ec2-54-171-231-214.eu-west-1.compute.amazonaws.com";
 const KAFKA_HOST = "localhost";
 
 KafkaAdapter = function () {
