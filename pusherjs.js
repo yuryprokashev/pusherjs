@@ -3,7 +3,7 @@
  */
 
 const PusherService = require('./src/PusherService2');
-const express = require( 'express' );
+const express = require('express');
 const server = express();
 
 var app = new PusherService(server);

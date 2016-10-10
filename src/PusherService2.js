@@ -9,11 +9,14 @@ const BusConstructor = require('./BusService');
 const Bus = new BusConstructor(new KafkaAdapter());
 const EventEmitter = require('events').EventEmitter;
 
+// const PUSHER_PORT = 80;
+const PUSHER_PORT = 50000;
+
 class PusherService2 {
     //@param: server instance
     constructor(s){
         this.pusher = require('http').Server(s);
-        this.pusher.listen(80);
+        this.pusher.listen(PUSHER_PORT);
         this.io = require('socket.io')(this.pusher);
         this.emitter = new EventEmitter();
         this.recipientsWaiting = new Map();
