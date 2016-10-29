@@ -46,6 +46,7 @@ class PusherService2 {
     listenBus(){
         let _this = this;
         function handle (busMessage) {
+            // console.log('payload-done arrived. running handle()...');
             let id = readRecipientId(busMessage);
             let msg = readRecipientMessage(busMessage);
             if(isRecipientWaiting(id) === true){
