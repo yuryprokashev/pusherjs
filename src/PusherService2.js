@@ -10,14 +10,16 @@ const Bus = new BusConstructor(new KafkaAdapter());
 const EventEmitter = require('events').EventEmitter;
 
 // const PUSHER_PORT = 80;
-const PUSHER_PORT = 50000;
+const PUSHER_PORT_HTTP = 50000;
+const PUSHER_PORT_HTTPS = 50443;
 
 class PusherService2 {
     //@param: server instance
-    constructor(s){
-        this.pusher = require('http').Server(s);
-        this.pusher.listen(PUSHER_PORT);
+    constructor(s, protocol){
+        this.pusher = require(protocol).Server(s);
+        this.pusher.listen(`PUSHER_PORT_${protocol.toUpperCase()}`);
         this.io = require('socket.io')(this.pusher);
+
         this.emitter = new EventEmitter();
         this.recipientsWaiting = new Map();
         this.arrivedBusMessages = new Map();
