@@ -17,12 +17,21 @@ class PusherService2 {
     //@param: server instance
     constructor(s, protocol){
         this.pusher = require(protocol).Server(s);
-        this.pusher.listen(`PUSHER_PORT_${protocol.toUpperCase()}`);
+        let port = function(protocol){
+            if(protocol === 'http'){
+                return 50000;
+            }
+            else if(protocol === 'https') {
+                return 50443
+            }
+        };
+        this.pusher.listen(port(protocol));
         this.io = require('socket.io')(this.pusher);
 
         this.emitter = new EventEmitter();
         this.recipientsWaiting = new Map();
         this.arrivedBusMessages = new Map();
+        console.log(`listening to `)
     }
     //@param: void
     //@function: starts listening for Bus and Socket messages
