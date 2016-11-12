@@ -3,12 +3,9 @@
  */
 
 const PusherService = require('./src/PusherService2');
+const parseProcessArgs = require('./src/parseProcessArgs');
 const express = require('express');
-const server = express();
+var args = parseProcessArgs();
 
-var app = new PusherService(server, 'http');
-app.listen();
-
-const serverSecure = express();
-var appSecure = new PusherService(serverSecure, 'https');
-appSecure.listen();
+var server = express();
+var app = new PusherService(server, args[0].isProd);

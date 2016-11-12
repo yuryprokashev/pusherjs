@@ -4,40 +4,64 @@
 
 "use strict";
 
-const KafkaAdapter = require('./KafkaAdapter');
-const BusConstructor = require('./BusService');
-const Bus = new BusConstructor(new KafkaAdapter());
+const KafkaAdapter = require('./KafkaAdapter2');
+const guid = require('./guid');
 const EventEmitter = require('events').EventEmitter;
-
-// const PUSHER_PORT = 80;
-const PUSHER_PORT_HTTP = 50000;
-const PUSHER_PORT_HTTPS = 50443;
+const KAFKA_TEST = "54.154.211.165";
+const KAFKA_PROD = "54.154.226.55";
+const io = require('socket.io');
 
 class PusherService2 {
     //@param: server instance
-    constructor(s, protocol){
-        this.pusher = require(protocol).Server(s);
-        let port = function(protocol){
-            if(protocol === 'http'){
-                return 50000;
-            }
-            else if(protocol === 'https') {
-                return 50443
+    constructor(s, isProd){
+        var _this = this;
+        if(isProd === undefined){
+            throw new Error('isProd flag is missing');
+        }
+        this.serviceName = 'Pusher-Service';
+        this.kafkaHost = (function(bool){
+            let result = bool ? KAFKA_PROD : KAFKA_TEST;
+            console.log(result);
+            return result;
+        })(isProd);
+        this.emitter = new EventEmitter();
+        this.bus = new KafkaAdapter(this.kafkaHost, this.serviceName, 2);
+        let requestId = guid();
+        this.bus.producer.on('ready', function () {
+            _this.bus.subscribe('get-config-response', _this.configure);
+            _this.bus.send('get-config-request', {requestId: requestId});
+        });
+        this.configure = function (msg) {
+            let message = JSON.parse(msg.value);
+            if(message.requestId === requestId){
+                // console.log(message);
+                let port = message.responsePayload[0].pusher.port;
+                let protocol = message.responsePayload[0].pusher.protocol;
+                _this.emitter.emit('config-ready', {port: port, protocol:protocol})
             }
         };
-        this.pusher.listen(port(protocol));
-        this.io = require('socket.io')(this.pusher);
-
-        this.emitter = new EventEmitter();
-        this.recipientsWaiting = new Map();
-        this.arrivedBusMessages = new Map();
-        console.log(`listening to `)
+        this.setPusher = function(args){
+            // console.log(args);
+            _this.pusher = require(args.protocol).Server(s);
+            _this.pusher.listen(args.port);
+            _this.io = io(_this.pusher);
+            _this.recipientsWaiting = new Map();
+            _this.arrivedBusMessages = new Map();
+            _this.emitter.emit('pusher-ready');
+        };
+        this.emitter.on('config-ready', _this.setPusher);
+        this.emitter.on('pusher-ready', function(){
+            console.log(`${_this.serviceName} bootstrapped`);
+            _this.listen();
+        });
     }
+
     //@param: void
     //@function: starts listening for Bus and Socket messages
     listen(){
-        this.listenBus();
-        this.listenConnection();
+        this.listenBus()
+            .listenConnection();
+        return this;
     }
     //@param: void
     //@function: start listening for Socket connections from client
@@ -51,6 +75,7 @@ class PusherService2 {
             });
         }
         this.io.on('connection', listenRecipient);
+        return this;
     }
     //@param: void
     //@function: start listening for Bus
@@ -108,7 +133,8 @@ class PusherService2 {
             return _this.recipientsWaiting.has(recipientId);
         }
 
-        Bus.subscribe('payload-done', handle);
+        this.bus.subscribe('payload-done', handle);
+        return this;
     }
 }
 
