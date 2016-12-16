@@ -133,7 +133,7 @@ class PusherService2 {
             return _this.recipientsWaiting.has(recipientId);
         }
 
-        this.bus.subscribe('payload-done', handle);
+        this.bus.subscribe('create-message-response-processed', handle);
         return this;
     }
 }
