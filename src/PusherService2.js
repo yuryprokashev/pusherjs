@@ -120,12 +120,12 @@ class PusherService2 {
         }
 
         function readRecipientId(busMessage) {
-            let v = JSON.parse(busMessage.value);
+            let v = JSON.parse(busMessage.value).response;
             return v.commandId || v.userToken;
         }
 
         function readRecipientMessage(busMessage){
-            let v = JSON.parse(busMessage.value);
+            let v = JSON.parse(busMessage.value).response;
             return v.commandId !== null ? v.monthCode : v.dayCode;
         }
 
@@ -139,3 +139,20 @@ class PusherService2 {
 }
 
 module.exports = PusherService2;
+// {
+//     "id":"25677a67-cf3d-a3c2-5aec-7d5fdbc5724e",
+//     "request":{
+//         "query":{},
+//     "writeData":{
+//             "user":"5840fa352280e4897cdd0bdb",
+//             "sourceId":1,
+//             "type":1,
+//             "payload":{
+//                 "dayCode":"20161219",
+//                 "monthCode":"201612",
+//                 "labels":{"isPlan":false,"isDeleted":false},
+//             "amount":10,
+//                 "description":"Test#10",
+//                 "id":null},
+//         "userToken":"6b06930f-8800-6387-8823-e73801495356","occurredAt":1482122876405}},
+//     "response":{"_id":"378fee50-8c43-a7b3-da4b-ff461fbb40c8","__v":0,"type":1,"amount":10,"dayCode":"20161219","monthCode":"201612","description":"Test#10","occurredAt":1482122876405,"sourceId":1,"campaignId":null,"userId":"5840fa352280e4897cdd0bdb","messageId":"b53cfa75-9ae7-7460-8e6a-6e8e786f07d2","userToken":"6b06930f-8800-6387-8823-e73801495356","commandId":null,"storedAt":1482122885174,"labels":{"isPlan":false,"isDeleted":false},"id":"378fee50-8c43-a7b3-da4b-ff461fbb40c8"}}
