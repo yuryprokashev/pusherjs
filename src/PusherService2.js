@@ -82,7 +82,7 @@ class PusherService2 {
     listenBus(){
         let _this = this;
         function handle (busMessage) {
-            // console.log('payload-done arrived. running handle()...');
+            console.log(`payload-done arrived. running handle() \n ${busMessage.value}`);
             let id = readRecipientId(busMessage);
             let msg = readRecipientMessage(busMessage);
             if(isRecipientWaiting(id) === true){
