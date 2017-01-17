@@ -57,7 +57,7 @@ class KafkaAdapter2 {
                 t.push({topic: topic, partition: i});
             }
             return t;
-        })(6);
+        })(1);
         this.consumer.addTopics(topics, onTopicsAdded);
         function onTopicsAdded(err, added){
             if(err){
