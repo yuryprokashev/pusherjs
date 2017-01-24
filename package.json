@@ -11,6 +11,7 @@
   "dependencies": {
     "express": "^4.14.0",
     "kafka-node": "^0.5.5",
+    "my-kafka": "file:../shared/myKafka",
     "pusher": "^1.4.0-rc6",
     "socket.io": "^1.4.8"
   },
