@@ -19,12 +19,6 @@ let kafkaHost = (function(bool){
 })(args[0].isProd);
 
 // WIRE EXTERNAL LIBRARIES
-const express = require('express');
-const bodyParser = require('body-parser');
-const path = require ('path');
-// CREATE APP
-const app = module.exports = express();
-
 // WIRE FACTORY MODULES
 const kafkaBusFactory = require('my-kafka').kafkaBusFactory;
 const kafkaServiceFactory = require('my-kafka').kafkaServiceFactory;
