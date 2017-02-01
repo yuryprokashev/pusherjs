@@ -63,6 +63,7 @@ kafkaBus.producer.on('ready', ()=> {
                 pusherCtrl = pusherCtrlFactory(socketCtrl, kafkaService);
 
                 kafkaListeners = configService.read(SERVICE_NAME, 'kafkaListeners');
+                console.log(kafkaListeners);
                 kafkaService.subscribe(kafkaListeners.notifyPayloadCreated, false, pusherCtrl.handleKafkaMessage);
 
             });
