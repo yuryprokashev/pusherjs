@@ -21,8 +21,8 @@ module.exports = configService => {
 
     // Starting Socket Server
 
-    protocol = configService.read('pusher', 'protocol');
-    port = configService.read('pusher', 'port');
+    protocol = configService.read('pusher.protocol');
+    port = configService.read('pusher.port');
 
     httpServer = require(protocol).Server(express());
     httpServer.listen(port);
