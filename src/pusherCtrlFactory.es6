@@ -4,13 +4,19 @@
 
 'use strict';
 
-module.exports = (socketCtrl, kafkaService) => {
+module.exports = (socketCtrl, configService, kafkaService) => {
 
     let pusherCtrl = {};
 
+    let kafkaListeners,
+        isSignedMessage;
+
+    let handleKafkaMessage,
+        handleNewRecipient;
+
     let messagesWaitingForRecipients = new Map();
 
-    pusherCtrl.handleKafkaMessage = (kafkaMessage) => {
+    handleKafkaMessage = kafkaMessage => {
 
         let context,
             recipientId,
@@ -29,7 +35,7 @@ module.exports = (socketCtrl, kafkaService) => {
 
     };
 
-    pusherCtrl.handleNewRecipient = (eventArgs) => {
+    handleNewRecipient = (eventArgs) => {
         let recipientId,
             message;
         recipientId = eventArgs.id;
@@ -45,7 +51,13 @@ module.exports = (socketCtrl, kafkaService) => {
 
     };
 
-    socketCtrl.on('recipient-arrived', pusherCtrl.handleNewRecipient);
+    socketCtrl.on('recipient-arrived', handleNewRecipient);
+
+    kafkaListeners = configService.read('pusher.kafkaListeners');
+    isSignedMessage = false;
+    if(kafkaListeners !== undefined) {
+        kafkaService.subscribe(kafkaListeners.notifyPayloadCreated, isSignedMessage, handleKafkaMessage);
+    }
 
     return pusherCtrl;
 

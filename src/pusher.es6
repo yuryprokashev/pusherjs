@@ -43,36 +43,33 @@ let configCtrl,
     pusherCtrl,
     socketCtrl;
 
-let kafkaListeners;
+let bootstrapComponents,
+    handleError;
+
+bootstrapComponents = () => {
+    configObject = configObjectFactory(SERVICE_NAME);
+    configService = configServiceFactory(configObject);
+    configCtrl = configCtrlFactory(configService, kafkaService);
+
+    configCtrl.on('ready', () => {
+
+        socketCtrl = socketCtrlFactory(configService);
+        pusherCtrl = pusherCtrlFactory(socketCtrl, configService, kafkaService);
+
+    });
+
+    configCtrl.on('error', (args) => {
+        handleError(args);
+    })
+};
+
+handleError = (err) => {
+    //TODO. Implement centralized error logging.
+    console.log(err);
+};
 
 
 kafkaBus = kafkaBusFactory(kafkaHost, SERVICE_NAME);
 kafkaService = kafkaServiceFactory(kafkaBus);
 
-kafkaBus.producer.on('ready', ()=> {
-
-    configObject = configObjectFactory(SERVICE_NAME);
-    configObject.init().then(
-        (config) => {
-            configService = configServiceFactory(config);
-            configCtrl = configCtrlFactory(configService, kafkaService);
-            kafkaService.subscribe('get-config-response', true, configCtrl.writeConfig);
-            kafkaService.send('get-config-request', true, configObject);
-            configCtrl.on('ready', () => {
-                socketCtrl = socketCtrlFactory(configService);
-                pusherCtrl = pusherCtrlFactory(socketCtrl, kafkaService);
-
-                kafkaListeners = configService.read(SERVICE_NAME, 'kafkaListeners');
-                console.log(kafkaListeners);
-                kafkaService.subscribe(kafkaListeners.notifyPayloadCreated, false, pusherCtrl.handleKafkaMessage);
-
-            });
-            configCtrl.on('error', (args) => {
-                console.log(args);
-            });
-        },
-        (err) => {
-            console.log(`ConfigObject Promise rejected ${JSON.stringify(err.error)}`);
-        }
-    );
-});
+kafkaBus.producer.on('ready', bootstrapComponents);
