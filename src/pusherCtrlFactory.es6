@@ -8,8 +8,7 @@ module.exports = (socketCtrl, configService, kafkaService) => {
 
     let pusherCtrl = {};
 
-    let kafkaListeners,
-        isSignedMessage;
+    let kafkaListeners;
 
     let handleKafkaMessage,
         handleNewRecipient;
@@ -23,6 +22,8 @@ module.exports = (socketCtrl, configService, kafkaService) => {
             message;
 
         context = kafkaService.extractContext(kafkaMessage);
+        if(context.error !== undefined) {console.error(context.error)}
+
         recipientId = context.response.userToker || context.response.commandId;
         message = context.response.commandId ? context.response.monthCode : context.response.dayCode;
 
@@ -54,9 +55,8 @@ module.exports = (socketCtrl, configService, kafkaService) => {
     socketCtrl.on('recipient-arrived', handleNewRecipient);
 
     kafkaListeners = configService.read('pusher.kafkaListeners');
-    isSignedMessage = false;
     if(kafkaListeners !== undefined) {
-        kafkaService.subscribe(kafkaListeners.notifyPayloadCreated, isSignedMessage, handleKafkaMessage);
+        kafkaService.subscribe(kafkaListeners.notifyPayloadCreated, handleKafkaMessage);
     }
 
     return pusherCtrl;
