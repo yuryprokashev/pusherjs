@@ -19,6 +19,7 @@ let kafkaHost = (function(bool){
 })(args[0].isProd);
 
 // WIRE EXTERNAL LIBRARIES
+const EventEmitter = require('events').EventEmitter;
 // WIRE FACTORY MODULES
 const kafkaBusFactory = require('my-kafka').kafkaBusFactory;
 const kafkaServiceFactory = require('my-kafka').kafkaServiceFactory;
@@ -47,9 +48,9 @@ let bootstrapComponents,
     handleError;
 
 bootstrapComponents = () => {
-    configObject = configObjectFactory(SERVICE_NAME);
-    configService = configServiceFactory(configObject);
-    configCtrl = configCtrlFactory(configService, kafkaService);
+    configObject = configObjectFactory(SERVICE_NAME, EventEmitter);
+    configService = configServiceFactory(configObject, EventEmitter);
+    configCtrl = configCtrlFactory(configService, kafkaService, EventEmitter);
 
     configCtrl.on('ready', () => {
 
@@ -69,7 +70,7 @@ handleError = (err) => {
 };
 
 
-kafkaBus = kafkaBusFactory(kafkaHost, SERVICE_NAME);
-kafkaService = kafkaServiceFactory(kafkaBus);
+kafkaBus = kafkaBusFactory(kafkaHost, SERVICE_NAME, EventEmitter);
+kafkaService = kafkaServiceFactory(kafkaBus, EventEmitter);
 
 kafkaBus.producer.on('ready', bootstrapComponents);
