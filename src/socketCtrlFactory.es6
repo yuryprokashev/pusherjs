@@ -11,7 +11,7 @@ module.exports = configService => {
 
     let socketCtrl;
 
-    let arrivedRecipients = new Map();
+    let arrivedRecipients = new Map(); //TODO. NEVER STORE OBJECTS IN CONTROLLER!!!
 
     let protocol,
         port;
@@ -52,7 +52,9 @@ module.exports = configService => {
         recipient.on('set-id', registerRecipient);
     };
 
-    socketServer.on('connection', registerConnection);
+    socketCtrl.start = () => {
+        socketServer.on('connection', registerConnection);
+    };
 
     return socketCtrl;
 

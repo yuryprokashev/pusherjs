@@ -44,31 +44,22 @@ let configCtrl,
     pusherCtrl,
     socketCtrl;
 
-let bootstrapComponents,
-    handleError;
+let bootstrapComponents;
 
 bootstrapComponents = () => {
     configObject = configObjectFactory(SERVICE_NAME, EventEmitter);
     configService = configServiceFactory(configObject, EventEmitter);
     configCtrl = configCtrlFactory(configService, kafkaService, EventEmitter);
+    configCtrl.start();
 
     configCtrl.on('ready', () => {
-
         socketCtrl = socketCtrlFactory(configService);
+        socketCtrl.start();
         pusherCtrl = pusherCtrlFactory(socketCtrl, configService, kafkaService);
+        pusherCtrl.start();
 
     });
-
-    configCtrl.on('error', (args) => {
-        handleError(args);
-    })
 };
-
-handleError = (err) => {
-    //TODO. Implement centralized error logging.
-    console.log(err);
-};
-
 
 kafkaBus = kafkaBusFactory(kafkaHost, SERVICE_NAME, EventEmitter);
 kafkaService = kafkaServiceFactory(kafkaBus, EventEmitter);

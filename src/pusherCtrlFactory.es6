@@ -13,7 +13,7 @@ module.exports = (socketCtrl, configService, kafkaService) => {
     let handleKafkaMessage,
         handleNewRecipient;
 
-    let messagesWaitingForRecipients = new Map();
+    let messagesWaitingForRecipients = new Map(); // TODO. NEVER STORE OBJECTS IN CONTROLLER!
 
     handleKafkaMessage = kafkaMessage => {
 
@@ -52,12 +52,13 @@ module.exports = (socketCtrl, configService, kafkaService) => {
 
     };
 
-    socketCtrl.on('recipient-arrived', handleNewRecipient);
-
-    kafkaListeners = configService.read('pusher.kafkaListeners');
-    if(kafkaListeners !== undefined) {
-        kafkaService.subscribe(kafkaListeners.notifyPayloadCreated, handleKafkaMessage);
-    }
+    pusherCtrl.start = () => {
+        socketCtrl.on('recipient-arrived', handleNewRecipient);
+        kafkaListeners = configService.read('pusher.kafkaListeners');
+        if(kafkaListeners !== undefined) {
+            kafkaService.subscribe(kafkaListeners.notifyPayloadCreated, handleKafkaMessage);
+        }
+    };
 
     return pusherCtrl;
 
